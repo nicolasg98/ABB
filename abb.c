@@ -1,5 +1,6 @@
 #define _GNU_SOURCE
 #include "abb.h"
+#include "pila.h"
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -165,16 +166,53 @@ void abb_destruir(abb_t *arbol){
  * *****************************************************************/
 
 
-/*abb_iter_t *abb_iter_in_crear(const abb_t *arbol);
+struct abb_iter{
+	abb_t* abb;
+	pila_t* pila;
+}
 
+abb_iter_t *abb_iter_in_crear(const abb_t *arbol){
+	abb_iter_t* iter_inorder = malloc(sizeof(abb_iter_t));
+	if(!iter_inorder) return NULL;
+	iter_inorder->abb = arbol;
+	iter_inorder->pila = pila_crear();
+	if(arbol->raiz != NULL) pila_apilar(iter_inorder->pila, arbol->raiz);
+	nodo_abb_t* nodo = arbol->raiz;
+	while(nodo != NULL){
+		nodo = nodo->izq;
+		pila_apilar(iter_inorder->pila, nodo);
+	}
+	return iter_inorder;
+}
 
-bool abb_iter_in_avanzar(abb_iter_t *iter);
+bool abb_iter_in_avanzar(abb_iter_t *iter){
+	if(abb_iter_in_al_final(iter)) return false;
+	nodo_abb_t* nodo = pila_desapilar(iter->pila);
+	nodo = nodo->der;
+	if(abb_pertenece(iter->abb, nodo->der->clave)){
+		pila_apilar(iter->pila, nodo);
+		while(nodo->izq != NULL){
+			pila_apilar(iter->pila, nodo->izq);
+			nodo = nodo->izq;
+		}
+	}
+	return true;
+}
 
+const char *abb_iter_in_ver_actual(const abb_iter_t *iter){
+	if(abb_iter_in_al_final(iter)) return NULL;
+	nodo_abb_t* nodo_tope = pila_ver_tope(iter->pila);
+	return nodo_tope->clave;
+}
 
-const char *abb_iter_in_ver_actual(const abb_iter_t *iter);
+bool abb_iter_in_al_final(const abb_iter_t *iter){
+	return pila_esta_vacia(iter->pila);
+}
 
-
-bool abb_iter_in_al_final(const abb_iter_t *iter);
-
-
-void abb_iter_in_destruir(abb_iter_t* iter);*/
+void abb_iter_in_destruir(abb_iter_t* iter){
+	while(!pila_esta_vacia(iter->pila)){
+		free(pila_desapilar(iter->pila));
+	}
+	free(iter->pila);
+	free(iter);
+}
