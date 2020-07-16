@@ -132,25 +132,32 @@ size_t abb_cantidad(abb_t *arbol){
 }
 
 void *abb_borrar(abb_t *arbol, const char *clave){
+	arbol->cant --;
 	return arbol->raiz->dato;
 }
 
 
 void abb_destruir(abb_t *arbol){
-	while(abb_pertenece(arbol, arbol->raiz->clave)){
-		arbol->destruir(abb_obtener(arbol, arbol->raiz->clave));
+	while(abb_cantidad(arbol) != 0){
+		void* a_borrar = abb_borrar(arbol, arbol->raiz->clave);
+		if(abb_pertenece(arbol, arbol->raiz->clave)) free(arbol->raiz->clave);
+		if(arbol->destruir) arbol->destruir(a_borrar);
 	}
-	free(arbol->raiz);
+	if(arbol->raiz){
+		if(arbol->destruir) arbol->destruir(arbol->raiz->dato);
+		free(arbol->raiz);
+	}
 	free(arbol);
 }
 
 //iter interno
-void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra){
+/*void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra){
+	if(!arbol) return;
 	nodo_abb_t* nodo = abb_nodo_buscar(arbol, arbol->raiz, arbol->raiz->clave);
 	abb_in_order(arbol, visitar(nodo->izq->clave, nodo->izq->dato, extra), extra);
 	visitar(nodo->clave, nodo->dato, extra);
 	abb_in_order(arbol, visitar(nodo->der->clave, nodo->der->dato, extra), extra);
-}
+}*/
 
 
 /* *****************************************************************
