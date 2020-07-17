@@ -167,9 +167,9 @@ void abb_destruir(abb_t *arbol){
 
 
 struct abb_iter{
-	abb_t* abb;
+	const abb_t* abb;
 	pila_t* pila;
-}
+};
 
 abb_iter_t *abb_iter_in_crear(const abb_t *arbol){
 	abb_iter_t* iter_inorder = malloc(sizeof(abb_iter_t));
@@ -201,7 +201,8 @@ bool abb_iter_in_avanzar(abb_iter_t *iter){
 
 const char *abb_iter_in_ver_actual(const abb_iter_t *iter){
 	if(abb_iter_in_al_final(iter)) return NULL;
-	nodo_abb_t* nodo_tope = pila_ver_tope(iter->pila);
+	nodo_abb_t* nodo_tope = NULL;
+	nodo_tope = pila_ver_tope(iter->pila);
 	return nodo_tope->clave;
 }
 
