@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 #include <stdlib.h>
-#include <stddef.h>
+#include <stdbool.h>
 
 
 typedef struct abb abb_t;
